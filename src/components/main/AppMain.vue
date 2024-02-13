@@ -26,6 +26,9 @@ export default {
 <style lang="scss" scoped>
 .main-container{
     background-color: gray;
+    height: calc( 100lvh - 66px );
+    overflow: auto;
+    padding: 25px 0;
 }
 
 </style>
