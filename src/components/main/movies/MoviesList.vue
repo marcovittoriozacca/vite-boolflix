@@ -18,13 +18,16 @@ export default {
 </script>
 
 <template>
-    <div class="movies-container">
+    <div v-if="store.loading" class="loading-state">
+        Loading...
+    </div>
+    <div v-else class="movies-container">
         <SingleMovie
-           v-for="(movie, index) in store.movies" :key="index" 
-           :title="movie.title"
-           :originalTitle="movie.original_title"
-           :lang="movie.original_language"
-           :rating="movie.vote_average" />
+           v-for="(element, index) in store.all" :key="index" 
+           :title="(element.title? element.title : element.name )"
+           :originalTitle="(element.original_title? element.original_title : element.original_name )"
+           :lang="element.original_language"
+           :rating="element.vote_average" />
     </div>
     
 </template>
@@ -34,6 +37,12 @@ export default {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+}
+
+.loading-state{
+    font-size: 2rem;
+    background-color: black;
+    color: white;
 }
 
 </style>

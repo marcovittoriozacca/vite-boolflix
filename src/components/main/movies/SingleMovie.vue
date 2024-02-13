@@ -6,16 +6,52 @@ export default {
         originalTitle: String,
         lang: String,
         rating: Number,
-    }
+    },
+
+    data() {
+        return {
+            
+        }
+    },
+    methods: {
+        flag(lang){
+            switch (lang){
+                case 'en':
+                    return 'gb';
+                case 'hi':
+                    return 'in';
+                case 'he':
+                    return 'il';
+                case 'zh':
+                    return 'cn';
+                case 'ko':
+                    return 'kr';
+                case 'ja':
+                    return 'jp';
+                case 'da':
+                    return 'dk';
+                case 'ta':
+                    return 'in';
+                case 'fa':
+                    return 'ir';
+                case 'cs':
+                    return 'cz';
+                case 'jv':
+                    return 'id';
+                default: return lang;
+            }
+        }
+    },
 }
 </script>
 
 <template>
     <div>
-        <h2>Title: {{ title }}</h2>
-        <h2>Original Title: {{ originalTitle }}</h2>
-        <h5>Language: {{ lang }}</h5>
-        <span>Rating: {{ rating }}</span>
+        <h2>{{ title }}</h2>
+        <h2>{{ originalTitle }}</h2>
+        <img :src="`https://flagcdn.com/w40/${ flag(lang)}.png`" :alt="lang"> 
+        
+        <span>{{ rating }}</span>
     </div>
 </template>
 
