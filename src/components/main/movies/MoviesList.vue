@@ -27,7 +27,8 @@ export default {
            :title="(element.title? element.title : element.name )"
            :originalTitle="(element.original_title? element.original_title : element.original_name )"
            :lang="element.original_language"
-           :rating="element.vote_average" />
+           :rating="element.vote_average"
+           :image="element.poster_path" />
     </div>
     
 </template>
