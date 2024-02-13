@@ -1,0 +1,9 @@
+@mixin container-lg{
+    width: 95%;
+    margin: 0 auto;
+}
+@mixin total-flex{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
