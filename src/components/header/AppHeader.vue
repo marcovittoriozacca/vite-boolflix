@@ -1,7 +1,15 @@
 <script>
+import { store } from '@/store';
+
 export default {
-    name: 'AppHeader'
+    name: 'AppHeader',
     
+
+    data() {
+        return {
+            store,
+        }
+    },
 }
 </script>
 
@@ -11,8 +19,8 @@ export default {
             <h1>Boolflix</h1>
     
             <div>
-                <input type="text" name="searchbar" id="searchbar" placeholder="Inserisci il nome del film...">
-                <button type="button">Send</button>
+                <input type="text" name="searchbar" id="searchbar" placeholder="Inserisci il nome del film..." v-model="store.movieSearchText" @keydown.enter="$emit('search')">
+                <button type="button" @click.prevent="$emit('search')">Send</button>
             </div>
         </div>
     </header>

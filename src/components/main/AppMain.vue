@@ -1,18 +1,24 @@
 <script>
 import MovieList from './movies/MoviesList.vue'
+import { store } from '@/store';
 
 export default {
     components:{
         MovieList,
     },
 
-    name: 'AppMain'
+    name: 'AppMain',
+
+    data(){
+        return{
+            store,
+        }
+    }
 }
 </script>
 
 <template>
     <div class="main-container">
-        <h2>Test Main</h2>
         <MovieList/>
     </div>
 </template>
@@ -20,7 +26,6 @@ export default {
 <style lang="scss" scoped>
 .main-container{
     background-color: gray;
-    height: 400px;
 }
 
 </style>
