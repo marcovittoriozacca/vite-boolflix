@@ -4,13 +4,7 @@ import { store } from '@/store';
 export default {
     name: 'SingleMovie',
     props:{
-        title: String,
-        originalTitle: String,
-        lang: String,
-        rating: Number,
-        image: String,
-        description: String,
-        id: Number,
+        propElement: Object,
         genreObj: Array,
         isSeries: Boolean
     },
@@ -75,7 +69,7 @@ export default {
             }else{
                 endpoint = 'movie'
             }
-            axios.get(`https://api.themoviedb.org/3/${endpoint}/${this.id}/credits?api_key=${store.API_KEY}`)
+            axios.get(`https://api.themoviedb.org/3/${endpoint}/${this.propElement.id}/credits?api_key=${store.API_KEY}`)
             .then((res) => {
                 this.actor = res.data.cast
                 if(this.actor.length > 5){
@@ -136,35 +130,35 @@ export default {
 
 <template>
 
-    <div class="element-container" @mouseenter="hoverEffect"
-        :class="hover? 'activeHover' : '' ">
+    <div class="element-container" 
+         @mouseenter="hoverEffect"
+         :class="hover? 'activeHover' : '' ">
+
         <figure class="element-image">
-            <img v-if="image" :src="`https://image.tmdb.org/t/p/w500/${image}`" :alt="title">
+            <img v-if="propElement.poster_path" :src="`https://image.tmdb.org/t/p/w500/${propElement.poster_path}`" :alt="propElement.title? propElement.title : propElement.name">
             <p class="missing-img" v-else> 🧐 <br>No image </p>
         </figure>
+
         <div class="info-container">
             <div class="info">
-                <div v-if="title != originalTitle">
-                    <p><span>Titolo:</span> {{ title }}</p>
-                    <p><span>Titolo originale:</span> {{ originalTitle }}</p>
-                </div>
-                <div v-else>
-                    <p><span>Titolo: {{ title }}</span></p>
+                <div>
+                    <p><span>Titolo:</span> {{ propElement.title? propElement.title : propElement.name }}</p>
+                    <p><span>Titolo originale:</span> {{ propElement.original_title? propElement.original_title : propElement.original_name }}</p>
                 </div>
                 <figure class="language">
                     <span>Lingua: </span>
-                    <img :src="`https://flagcdn.com/w40/${ flag(lang)}.png`" :alt="lang">
+                    <img :src="`https://flagcdn.com/w40/${ flag(propElement.original_language)}.png`" :alt="propElement.original_language">
                 </figure>
-                <div v-if="rating!= 0" class="stars">
+                <div v-if="propElement.vote_average!= 0" class="stars">
                     <span>Voto: </span>
                     <span v-for="(star, index) in 5" :key="index">
-                        <i class="fa-solid fa-star" :style="(index < stars(rating)? 'color: #FFD43B' : '' )"></i>
+                        <i class="fa-solid fa-star" :style="(index < stars(propElement.vote_average)? 'color: #FFD43B' : '' )"></i>
                     </span>
                 </div>
                 <span v-else>
                     No rating available yet...
                 </span>
-                <p v-if="description"><span>Overview:</span> {{ description }}</p>
+                <p v-if="propElement.overview"><span>Overview:</span> {{ propElement.overview }}</p>
                 <span v-else></span>
                 <div class="actors">
                         <span>Attori: </span>
@@ -183,6 +177,7 @@ export default {
                 </div>
             </div>
         </div>
+
     </div>
 </template>
 

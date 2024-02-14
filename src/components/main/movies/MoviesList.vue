@@ -33,43 +33,28 @@ export default {
 
         <div v-else>
 
+            <!-- Film row -->
             <div class="row-container" v-if="store.movies.length != 0 " >
-
                 <h2>Film:</h2>
-
                 <div class="movies-container">
-
                     <SingleMovie
                        v-for="(element, index) in store.movies" :key="index" 
-                       :title="(element.title? element.title : element.name )"
-                       :originalTitle="(element.original_title? element.original_title : element.original_name )"
-                       :lang="element.original_language"
-                       :rating="element.vote_average"
-                       :image="element.poster_path"
-                       :description="element.overview"
-                       :id="element.id"
-                       :genreObj="element.genre_ids" />
-
+                       :propElement = "element"
+                       :genreObj="element.genre_ids" 
+                    />
                 </div>
             </div>
 
+            <!-- Series row -->
             <div class="row-container" v-if="store.series.length != 0 ">
-            
                 <h2>Serie Tv:</h2>
-            
                 <div class="movies-container">
-
                     <SingleMovie
                        v-for="(element, index) in store.series" :key="index" 
-                       :title="(element.title? element.title : element.name )"
-                       :originalTitle="(element.original_title? element.original_title : element.original_name )"
-                       :lang="element.original_language"
-                       :rating="element.vote_average"
-                       :image="element.poster_path"
-                       :description="element.overview"
-                       :id="element.id"
+                       :propElement = "element"
                        :is-series = true
-                       :genreObj="element.genre_ids" />
+                       :genreObj="element.genre_ids" 
+                    />
                 </div>
             </div>
 
