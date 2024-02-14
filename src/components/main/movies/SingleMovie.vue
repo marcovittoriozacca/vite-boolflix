@@ -1,4 +1,6 @@
 <script>
+import axios from 'axios';
+import { store } from '@/store';
 export default {
     name: 'SingleMovie',
     props:{
@@ -8,11 +10,17 @@ export default {
         rating: Number,
         image: String,
         description: String,
+        id: Number,
+        genreObj: Array,
     },
 
     data() {
         return {
-            starsNumber: 0
+            starsNumber: 0,
+            hover: false,
+            store,
+            actor:[],
+            matchGenres: [],
         }
     },
     methods: {
@@ -48,30 +56,70 @@ export default {
             if(variable !== 0){
                 return Math.round( variable / 2 )
             }
-        }
-    },
+        },
+        hoverEffect(){
+                const interval = setInterval(() => {
+                    this.hover = true
+                    clearInterval(interval)
+                }, 500);
+                this.hover = false
+            
+        },
+        getActors(){
+            let endpoint;
 
+            if(this.isSeries){
+                endpoint = 'tv'
+            }else{
+                endpoint = 'movie'
+            }
+
+            axios.get(`https://api.themoviedb.org/3/${endpoint}/${this.id}/credits?api_key=${store.API_KEY}`)
+        .then((res) => {
+            for (let i = 0; i < 5; i++) {
+               this.actor.push(
+                res.data.cast[i].name
+               )
+            }
+            return this.actor
+        }).catch((err) => err.response.status = null)
+        },
+
+    },
+    created() {
+        this.getActors()
+    },
 }
+
 </script>
 
 <template>
-    <div class="element-container">
+    <div class="element-container"
+
+        @mouseenter="hoverEffect"
+        :class="hover? 'activeHover' : '' "    
+    >
         <figure class="element-image">
-            <img v-if="image" :src="`https://image.tmdb.org/t/p/w342/${image}`" :alt="title">
+            <img v-if="image" :src="`https://image.tmdb.org/t/p/w500/${image}`" :alt="title">
             <p class="missing-img" v-else> 🧐 <br>No image </p>
         </figure>
         <div class="info-container">
             <div class="info">
-                <p><span>Titolo:</span> {{ title }}</p>
-                <p><span>Titolo originale:</span> {{ originalTitle }}</p>
+                <div v-if="title != originalTitle">
+                    <p><span>Titolo:</span> {{ title }}</p>
+                    <p><span>Titolo originale:</span> {{ originalTitle }}</p>
+                </div>
+                <div v-else>
+                    <p><span>Titolo: {{ title }}</span></p>
+                </div>
                 <figure class="language">
                     <span>Lingua: </span>
                     <img :src="`https://flagcdn.com/w40/${ flag(lang)}.png`" :alt="lang">
                 </figure>
                 <div v-if="rating!= 0" class="stars">
                     <span>Voto: </span>
-                    <span v-for="star in stars(rating)">
-                        <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                    <span v-for="(star, index) in 5" :key="index">
+                        <i class="fa-solid fa-star" :style="(index < stars(rating)? 'color: #FFD43B' : '' )"></i>
                     </span>
                 </div>
                 <span v-else>
@@ -79,6 +127,15 @@ export default {
                 </span>
                 <p v-if="description"><span>Overview:</span> {{ description }}</p>
                 <span v-else></span>
+                <div class="actors">
+                        <span>Attori: </span>
+                        <p v-for="(actors, index) in actor" :key="index" v-if="actor.length != 0">
+                            {{ actors }}
+                        </p>
+                        <p v-else>
+                            No actors
+                        </p>
+                </div>
             </div>
         </div>
     </div>
@@ -86,38 +143,47 @@ export default {
 
 <style lang="scss" scoped>
 @use '../../../assets/style/partials/mixins' as *;
-
-    .element-container{
-        background-color: black;
-        border: .5px solid lightgray;
-        position: relative;
-        width: calc( 100% / 5 - 8px );
-        aspect-ratio: 1/1.5;
-        
+.activeHover{
+    transition: .2s all ease-out;
+        &:hover{
+            width: 500px;
+            .element-image img{
+                opacity: 0;
+            }
+        }
         &:hover .info-container {
             display: block;
             cursor: pointer;
         }
-        &:hover figure.element-image{
-            opacity: .1;
-            cursor: pointer;
-        }
-        &:hover figure.element-image img{
-            transform: scale(110%);
-        }
+}
+    .element-container{
+        background-color: black;
+        position: relative;
+        height: 400px;
+        width: 300px;
+        border-radius: 10px;
+        flex: 0 0 auto;
+        
         figure.element-image{
-            @include full-ratio;
+            height: 100%;
+            border-radius: 10px;
+
             overflow: hidden;
             img{
-                @include full-ratio;
-                transition: .3s all linear;
+                cursor: pointer;
+                border-radius: 10px;
+                height: 100%;
+                min-width: 100%;
+                transition: .2s all ease-in-out;
             }
         }
         .info-container{
+            
             position: absolute;
             top: 0;
             @include full-ratio;
             overflow: auto;
+            @include no-scrollbar;
             display: none;
             padding: 10px 5px;
                 .info{
@@ -149,7 +215,21 @@ export default {
         font-size: 3rem;
         @include center-flex;
         @include full-ratio;
+        width: 266px;
+        height: 400px;
         
+    }
+
+    .actors{
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        p:not(p:last-child){
+            &::after{
+                content: ',';
+            }
+        }
     }
 
 </style>
