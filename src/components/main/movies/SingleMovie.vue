@@ -22,6 +22,7 @@ export default {
             store,
             actor:[],
             matchGenres: [],
+
         }
     },
     methods: {
@@ -85,14 +86,26 @@ export default {
         },
 
         getGenre(){
-            
-            this.genreObj.forEach(element => {
-            store.filmGenre.forEach(el => {
-                if(el.id == element){
-                    this.matchGenres.push(el.name)
-                }
-            }); 
-        });
+            this.matchGenres = new Set()
+
+            if(!this.isSeries){
+                this.genreObj.forEach(element => {
+                    store.filmGenre.forEach(el => {
+                        if(el.id == element){
+                            this.matchGenres.add(el.name)
+                        }
+                    }); 
+                });
+            }else{
+                this.genreObj.forEach(element => {
+                    store.seriesGenre.forEach(el => {
+                        if(el.id == element){
+                            this.matchGenres.add(el.name)
+                        }
+                    }); 
+                });
+            }
+            this.matchGenres = Array.from(this.matchGenres);
         }
 
 
@@ -104,17 +117,27 @@ export default {
     mounted(){
         
         this.getGenre()
+    },
+    watch:{
+        'store.filmGenre':{
+            handler: function(){
+                this.getGenre()
+            }
+        },
+        'store.seriesGenre':{
+            handler: function(){
+                this.getGenre()
+            }
+        }
     }
 }
 
 </script>
 
 <template>
-    <div class="element-container"
 
-        @mouseenter="hoverEffect"
-        :class="hover? 'activeHover' : '' "    
-    >
+    <div class="element-container" @mouseenter="hoverEffect"
+        :class="hover? 'activeHover' : '' ">
         <figure class="element-image">
             <img v-if="image" :src="`https://image.tmdb.org/t/p/w500/${image}`" :alt="title">
             <p class="missing-img" v-else> 🧐 <br>No image </p>
@@ -154,7 +177,7 @@ export default {
                 </div>
                 <div class="geners">
                     <span>Generi: </span>
-                    <p v-for="(genres, index) in ref=matchGenres" :key="index">
+                    <p v-for="(genres, index) in matchGenres" :key="index">
                         {{ genres }}
                     </p>
                 </div>
@@ -239,10 +262,11 @@ export default {
         @include full-ratio;
         width: 266px;
         height: 400px;
+        cursor: pointer;
         
     }
 
-    .actors{
+    .actors, .geners{
         display: flex;
         align-items: center;
         flex-wrap: wrap;

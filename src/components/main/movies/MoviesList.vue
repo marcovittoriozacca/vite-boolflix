@@ -22,6 +22,7 @@ export default {
 
 <template>
     <!-- se non ci sono elementi corrispondenti alla nostra ricerca -->
+
     <div v-if="!store.match" class="no-match">
         Non è stato trovato nessun risultato 🧐
     </div>
@@ -32,11 +33,12 @@ export default {
 
         <div v-else>
 
-            <div class="row-container">
+            <div class="row-container" v-if="store.movies.length != 0 " >
 
                 <h2>Film:</h2>
 
                 <div class="movies-container">
+
                     <SingleMovie
                        v-for="(element, index) in store.movies" :key="index" 
                        :title="(element.title? element.title : element.name )"
@@ -47,14 +49,16 @@ export default {
                        :description="element.overview"
                        :id="element.id"
                        :genreObj="element.genre_ids" />
+
                 </div>
             </div>
 
-            <div class="row-container">
+            <div class="row-container" v-if="store.series.length != 0 ">
             
                 <h2>Serie Tv:</h2>
             
                 <div class="movies-container">
+
                     <SingleMovie
                        v-for="(element, index) in store.series" :key="index" 
                        :title="(element.title? element.title : element.name )"
@@ -79,7 +83,7 @@ export default {
 @use '../../../assets/style/partials/mixins' as *;
 
 .row-container{
-
+    position: relative;
     padding-inline: 30px;
     margin-bottom: 40px;
 
@@ -88,12 +92,30 @@ export default {
         margin-bottom: 10px;
         color: white;
     }
+    i{
+        position: absolute;
+        background-color: rgba(255, 255, 255, 1);
+        font-size: 1.5rem;
+        padding: 5px 10px;
+        border-radius: 50%;
+        z-index: 2;
+        top:50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+    }
+    .fa-angle-right{
+
+        right: 45px;
+    }
+    .fa-angle-left{
+        left: 45px;
+    }
 }
 .movies-container{
     display: flex;
     gap: 10px;
     overflow-x: scroll;
-    @include no-scrollbar;
+    // @include no-scrollbar;
 
 }
 .no-match{
@@ -101,6 +123,8 @@ export default {
     font-weight: bold;
     font-size: 2rem;
     margin-top: 50px;
+    color: white;
+    
 }
 .loading-state{
     font-size: 2rem;

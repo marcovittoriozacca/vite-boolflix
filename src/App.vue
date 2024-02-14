@@ -53,11 +53,14 @@
         await  this.getMovies();
         await  this.getSeries();
         store.all = store.series.concat(store.movies)
-        
+        if(store.all.length != 0){
+          store.match = true;
+        }else{
+          store.match = false;
+        }
         store.loading = false;
-      }
-
-
+      },
+    
     },
 
 
