@@ -12,6 +12,7 @@ export default {
         description: String,
         id: Number,
         genreObj: Array,
+        isSeries: Boolean
     },
 
     data() {
@@ -73,22 +74,37 @@ export default {
             }else{
                 endpoint = 'movie'
             }
-
             axios.get(`https://api.themoviedb.org/3/${endpoint}/${this.id}/credits?api_key=${store.API_KEY}`)
-        .then((res) => {
-            for (let i = 0; i < 5; i++) {
-               this.actor.push(
-                res.data.cast[i].name
-               )
-            }
-            return this.actor
+            .then((res) => {
+                this.actor = res.data.cast
+                if(this.actor.length > 5){
+                    this.actor = this.actor.slice(0, 5)
+                }
+                return this.actor
         }).catch((err) => err.response.status = null)
         },
+
+        getGenre(){
+            
+            this.genreObj.forEach(element => {
+            store.filmGenre.forEach(el => {
+                if(el.id == element){
+                    this.matchGenres.push(el.name)
+                }
+            }); 
+        });
+        }
+
 
     },
     created() {
         this.getActors()
+        
     },
+    mounted(){
+        
+        this.getGenre()
+    }
 }
 
 </script>
@@ -130,11 +146,17 @@ export default {
                 <div class="actors">
                         <span>Attori: </span>
                         <p v-for="(actors, index) in actor" :key="index" v-if="actor.length != 0">
-                            {{ actors }}
+                            {{ actors.name }}
                         </p>
                         <p v-else>
                             No actors
                         </p>
+                </div>
+                <div class="geners">
+                    <span>Generi: </span>
+                    <p v-for="(genres, index) in ref=matchGenres" :key="index">
+                        {{ genres }}
+                    </p>
                 </div>
             </div>
         </div>

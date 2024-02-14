@@ -64,7 +64,7 @@ export default {
                        :image="element.poster_path"
                        :description="element.overview"
                        :id="element.id"
-                       is-series
+                       :is-series = true
                        :genreObj="element.genre_ids" />
                 </div>
             </div>

@@ -16,14 +16,16 @@
         store,
       }
     },
-    // https://api.themoviedb.org/3/genre/movie/list?api_key=d310a03c38e6724d794f826e8f368a0b
+
     methods: {
+      //riempimento array dei film
       async getMovies(){
         await axios.get(`${store.movieAPIurl}?api_key=${store.API_KEY}&query=${store.movieSearchText}`)
           .then( (res) => {
             store.movies = res.data.results;
           })
       },
+      //riempimento array delle serie tv
       async getSeries(){
         await axios.get(`${store.tvSeriesAPIurl}?api_key=${store.API_KEY}&query=${store.movieSearchText}`)
           .then( (res) => {
@@ -31,17 +33,19 @@
 
           })
       },
-      async getGenres(){
+      //riempimento degli array dei generi
+      async getMoviesGenres(){
         await axios.get(`${store.genreAPIurl}/movie/list?api_key=${store.API_KEY}`)
               .then( (res) => {
 
                 store.filmGenre = res.data.genres
               })
+      },
+      async getSeriesGenres(){
         await axios.get(`${store.genreAPIurl}/tv/list?api_key=${store.API_KEY}`)
               .then( (res) => {
                 store.seriesGenre = res.data.genres
               })
-        store.genres = store.filmGenre.concat(store.seriesGenre)
       },
 
       async getAll(){
@@ -49,14 +53,13 @@
         await  this.getMovies();
         await  this.getSeries();
         store.all = store.series.concat(store.movies)
-        if(store.all.length == 0){
-          store.match = false;
-        }else{
-          store.match = true;
-        }
+        
         store.loading = false;
       }
+
+
     },
+
 
     created() {
       axios.get('https://api.themoviedb.org/3/discover/movie?include_adult=true&include_video=false&language=it-IT&page=1&sort_by=popularity.desc&api_key='+store.API_KEY).then((res) =>{
@@ -69,7 +72,8 @@
     },
     mounted(){
       
-      this.getGenres();
+      this.getMoviesGenres();
+      this.getSeriesGenres();
     }
 
 

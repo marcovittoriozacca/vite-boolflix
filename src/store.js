@@ -11,8 +11,6 @@ export const store = reactive({
 
     seriesGenre: [],
     filmGenre: [],
-    genres: [],
-
 
     loading: false,
     match: true,
