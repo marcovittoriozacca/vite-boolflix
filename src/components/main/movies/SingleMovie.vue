@@ -16,6 +16,7 @@ export default {
             store,
             actor:[],
             matchGenres: [],
+            trailerUrl: '',
 
         }
     },
@@ -100,17 +101,37 @@ export default {
                 });
             }
             this.matchGenres = Array.from(this.matchGenres);
+        },
+        // get movie trailer, for now its just a random video
+        async getVideos(){
+            let endpoint
+
+            if(this.isSeries){
+               endpoint = 'tv' 
+            }else{
+                endpoint = 'movie'
+            }
+            await axios.get(`https://api.themoviedb.org/3/${endpoint}/${this.propElement.id}/videos?api_key=${store.API_KEY}`)
+            .then((res) => {
+                if(res.data.results.length > 0){
+                    this.trailerUrl = res.data.results[0].key
+                }
+            })
         }
 
 
     },
     created() {
         this.getActors()
-        
     },
     mounted(){
-        
         this.getGenre()
+        this.getVideos()
+    },
+    computed:{
+        embedUrl() {
+        return 'https://www.youtube.com/embed/' + this.trailerUrl;
+    }
     },
     watch:{
         'store.filmGenre':{
@@ -129,11 +150,11 @@ export default {
 </script>
 
 <template>
-
+    
     <div class="element-container" 
          @mouseenter="hoverEffect"
-         :class="hover? 'activeHover' : '' ">
-
+         :class="hover? 'activeHover' : '' ">    
+    
         <figure class="element-image">
             <img v-if="propElement.poster_path" :src="`https://image.tmdb.org/t/p/w500/${propElement.poster_path}`" :alt="propElement.title? propElement.title : propElement.name">
             <p class="missing-img" v-else> 🧐 <br>No image </p>
@@ -175,6 +196,12 @@ export default {
                         {{ genres }}
                     </p>
                 </div>
+                <div class="trailer" v-if="trailerUrl != ''">
+                    <button type="button">Clicca per vedere il trailer!</button>
+                    <dialog open>
+                        <iframe width="560" height="315" :src="embedUrl" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </dialog>
+                </div>
             </div>
         </div>
 
@@ -183,6 +210,22 @@ export default {
 
 <style lang="scss" scoped>
 @use '../../../assets/style/partials/mixins' as *;
+@use '../../../assets/style/partials/variables' as *;
+.trailer{
+    button{
+        border: 1px solid white;
+        border-radius: 4px;
+        padding: 5px 10px;
+        text-transform: uppercase;
+        color: $red;
+        background-color: black;
+        cursor: pointer;
+    }
+    dialog{
+        width: 100%;
+        height: 100%;
+    }
+}
 .activeHover{
     transition: .2s all ease-out;
         &:hover{
