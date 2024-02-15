@@ -1,12 +1,8 @@
 <script>
 import axios from 'axios';
 import { store } from '@/store';
-import TraielerComp from './TraielerComp.vue';
 export default {
     name: 'SingleMovie',
-    components:{
-    TraielerComp,
-},
     props:{
         propElement: Object,
         genreObj: Array,
@@ -20,6 +16,8 @@ export default {
             store,
             actor:[],
             matchGenres: [],
+            trailerUrl: '',
+            trailerFlag: false
 
 
         }
@@ -132,7 +130,13 @@ export default {
     },
     mounted(){
         this.getGenre()
+        this.getVideos()
         
+    },
+    computed: {
+        embedUrl() {
+            return 'https://www.youtube.com/embed/' + this.trailerUrl;
+        }
     },
     
     watch:{
@@ -155,7 +159,7 @@ export default {
     
     <div class="element-container" 
          @mouseover="hoverEffect"
-         @mouseleave="hover = false"
+         @mouseleave="hover = false, trailerFlag = false"
          :class="hover? 'activeHover' : '' ">    
     
         <figure class="element-image">
@@ -199,11 +203,14 @@ export default {
                         {{ genres }}
                     </p>
                 </div>
-                <TraielerComp
-                    :elementId="propElement.id"
-                    :is-series="(isSeries? true : false  )"
-                    :is-hovering="(hover? true : false)"
-                />
+                
+                //trailer section
+                <div class="trailer" v-if="trailerUrl != ''">
+                    <button @click="trailerFlag = !trailerFlag">Clicca per vedere il trailer!</button>
+                    <dialog :open="trailerFlag">
+                        <iframe v-if="trailerFlag && hover" :src="embedUrl" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
+                    </dialog>
+                </div>
                 
             </div>
         </div>
@@ -215,6 +222,25 @@ export default {
 @use '../../../assets/style/partials/mixins' as *;
 @use '../../../assets/style/partials/variables' as *;
 
+.trailer{
+    button{
+        border: 1px solid white;
+        border-radius: 4px;
+        padding: 5px 10px;
+        text-transform: uppercase;
+        color: $red;
+        background-color: black;
+        cursor: pointer;
+    }
+    dialog{
+        width: 100%;
+        height: 100%;
+        iframe{
+            width: 100%;
+            height: 100%;
+        }
+    }
+}
 .activeHover{
     transition: .2s all ease-out;
         &:hover{
