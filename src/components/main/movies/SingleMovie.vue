@@ -156,27 +156,50 @@ export default {
 </script>
 
 <template>
-    
+    <!-- general container for tv series and movies -->
     <div class="element-container" 
          @mouseover="hoverEffect"
          @mouseleave="hover = false, trailerFlag = false"
          :class="hover? 'activeHover' : '' ">    
-    
+
+        <!-- image section -->
         <figure class="element-image">
             <img v-if="propElement.poster_path" :src="`https://image.tmdb.org/t/p/w500/${propElement.poster_path}`" :alt="propElement.title? propElement.title : propElement.name">
             <p class="missing-img" v-else> 🧐 <br>No image </p>
         </figure>
 
+        <!-- info section -->
         <div class="info-container">
             <div class="info">
-                <div>
-                    <p><span>Titolo:</span> {{ propElement.title? propElement.title : propElement.name }}</p>
-                    <p><span>Titolo originale:</span> {{ propElement.original_title? propElement.original_title : propElement.original_name }}</p>
+
+                <!-- title section -->
+                <div v-if="propElement.title">
+                    <div v-if="propElement.title == propElement.original_title">
+                        <p><span>Titolo: </span>{{ propElement.title}}</p>
+                    </div>
+                    <div v-else>
+                        <p><span>Titolo:</span> {{ propElement.title}}</p>
+                        <p><span>Titolo originale:</span> {{ propElement.original_title}}</p>
+                    </div>
                 </div>
+
+                <div v-else>
+                    <div v-if="propElement.name == propElement.original_name">
+                        <p><span>Titolo: </span>{{ propElement.name}}</p>
+                    </div>
+                    <div v-else>
+                        <p><span>Titolo:</span> {{ propElement.name}}</p>
+                        <p><span>Titolo originale:</span> {{ propElement.original_name}}</p>
+                    </div>
+                </div>
+
+                <!-- language flag section -->
                 <figure class="language">
                     <span>Lingua: </span>
                     <img :src="`https://flagcdn.com/w40/${ flag(propElement.original_language)}.png`" :alt="propElement.original_language">
                 </figure>
+
+                <!-- star rating section -->
                 <div v-if="propElement.vote_average!= 0" class="stars">
                     <span>Voto: </span>
                     <span v-for="(star, index) in 5" :key="index">
@@ -186,8 +209,12 @@ export default {
                 <span v-else>
                     No rating available yet...
                 </span>
+                
+                <!-- overview -->
                 <p v-if="propElement.overview"><span>Overview:</span> {{ propElement.overview }}</p>
                 <span v-else></span>
+
+                <!-- actors section -->
                 <div class="actors">
                         <span>Attori: </span>
                         <p v-for="(actors, index) in actor" :key="index" v-if="actor.length != 0">
@@ -197,6 +224,8 @@ export default {
                             No actors
                         </p>
                 </div>
+
+                <!-- genres section -->
                 <div class="geners">
                     <span>Generi: </span>
                     <p v-for="(genres, index) in matchGenres" :key="index">
@@ -204,7 +233,7 @@ export default {
                     </p>
                 </div>
                 
-                //trailer section
+                <!-- trailer section -->
                 <div class="trailer" v-if="trailerUrl != ''">
                     <button @click="trailerFlag = !trailerFlag">Clicca per vedere il trailer!</button>
                     <dialog :open="trailerFlag">
@@ -235,9 +264,11 @@ export default {
     dialog{
         width: 100%;
         height: 100%;
+        background-color: black;
         iframe{
             width: 100%;
             height: 100%;
+            border-radius: 10px;
         }
     }
 }
