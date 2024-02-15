@@ -1,8 +1,12 @@
 <script>
 import axios from 'axios';
 import { store } from '@/store';
+import TraielerComp from './TraielerComp.vue';
 export default {
     name: 'SingleMovie',
+    components:{
+    TraielerComp,
+},
     props:{
         propElement: Object,
         genreObj: Array,
@@ -16,7 +20,7 @@ export default {
             store,
             actor:[],
             matchGenres: [],
-            trailerUrl: '',
+
 
         }
     },
@@ -55,11 +59,13 @@ export default {
             }
         },
         hoverEffect(){
+            if(!this.hover){
                 const interval = setInterval(() => {
                     this.hover = true
                     clearInterval(interval)
                 }, 500);
-                this.hover = false
+            }
+                
             
         },
         getActors(){
@@ -117,22 +123,18 @@ export default {
                     this.trailerUrl = res.data.results[0].key
                 }
             })
-        }
-
+        },
 
     },
     created() {
         this.getActors()
+        console.clear()
     },
     mounted(){
         this.getGenre()
-        this.getVideos()
+        
     },
-    computed:{
-        embedUrl() {
-        return 'https://www.youtube.com/embed/' + this.trailerUrl;
-    }
-    },
+    
     watch:{
         'store.filmGenre':{
             handler: function(){
@@ -152,7 +154,8 @@ export default {
 <template>
     
     <div class="element-container" 
-         @mouseenter="hoverEffect"
+         @mouseover="hoverEffect"
+         @mouseleave="hover = false"
          :class="hover? 'activeHover' : '' ">    
     
         <figure class="element-image">
@@ -196,12 +199,12 @@ export default {
                         {{ genres }}
                     </p>
                 </div>
-                <div class="trailer" v-if="trailerUrl != ''">
-                    <button type="button">Clicca per vedere il trailer!</button>
-                    <dialog open>
-                        <iframe width="560" height="315" :src="embedUrl" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                    </dialog>
-                </div>
+                <TraielerComp
+                    :elementId="propElement.id"
+                    :is-series="(isSeries? true : false  )"
+                    :is-hovering="(hover? true : false)"
+                />
+                
             </div>
         </div>
 
@@ -211,21 +214,7 @@ export default {
 <style lang="scss" scoped>
 @use '../../../assets/style/partials/mixins' as *;
 @use '../../../assets/style/partials/variables' as *;
-.trailer{
-    button{
-        border: 1px solid white;
-        border-radius: 4px;
-        padding: 5px 10px;
-        text-transform: uppercase;
-        color: $red;
-        background-color: black;
-        cursor: pointer;
-    }
-    dialog{
-        width: 100%;
-        height: 100%;
-    }
-}
+
 .activeHover{
     transition: .2s all ease-out;
         &:hover{
